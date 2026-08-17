@@ -1,0 +1,17 @@
+# Regeneratable from data/raw -- don't commit. data/raw/*.json and
+# data/norm_stats.npz ARE committed (small, self-generated, no external
+# download source -- see CLAUDE.md for why this deviates from the AirfRANS
+# project's blanket data/ gitignore).
+data/cache/
+data/runs/
+data/*.ckpt
+
+__pycache__/
+*.pyc
+
+# Abaqus scripting-kernel session artifacts (abaqus cae / abaqus python)
+*.rpy
+*.rpy.*
+*.rec
+abaqus_acis.log
+abaqusis.env

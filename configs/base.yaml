@@ -1,0 +1,50 @@
+# Base run config for the plate-with-hole GNN surrogate.
+#
+# The AirfRANS project never actually populated its configs/ dir -- hyperparams
+# lived as scattered constants in train.py. Doing it properly here: this file
+# is the single source of truth for model/training hyperparameters, loaded by
+# src/train.py's __main__ entry point.
+#
+# data_generation is documentation, not runtime-loaded: those values are
+# Abaqus-side constants in src/generate_dataset.py (which runs under Abaqus's
+# own Python 2.7 kernel, not this project's normal Python env) -- listed here
+# so the two stay easy to cross-check, not because this file drives that script.
+
+data_generation:
+  plate_width_mm: 100.0
+  plate_height_mm: 200.0
+  hole_radius_range_mm: [3.0, 15.0]
+  hole_margin_from_edge_mm: 12.0
+  load_displacement_range_mm: [0.05, 0.20]
+  material:
+    youngs_modulus_mpa: 210000.0
+    poissons_ratio: 0.3
+    plastic_table_mpa_strain: [[250.0, 0.0], [300.0, 0.01], [400.0, 0.05]]
+  mesh:
+    element_type: CPS4R
+    global_seed_mm: 2.0
+    hole_edge_seed_factor: 0.15  # local seed size = hole radius * this factor
+
+model:
+  node_in_dim: 4
+  edge_in_dim: 2
+  out_dim: 3
+  latent_dim: 32
+  hidden_dim: 64
+  n_message_passing: 4
+
+training:
+  max_epochs: 100
+  batch_size: 1
+  accumulate_grad_batches: 4
+  n_val: 2
+  lr: 0.001
+  checkpoint_every_n_epochs: 5
+  num_workers: 2
+  precision: "32-true"
+
+paths:
+  raw_dir: data/raw
+  cache_dir: data/cache
+  stats_path: data/norm_stats.npz
+  checkpoint_path: data/meshgraphnet.ckpt
