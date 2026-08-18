@@ -26,7 +26,8 @@ data_generation:
     hole_edge_seed_factor: 0.15  # local seed size = hole radius * this factor
 
 model:
-  node_in_dim: 4
+  node_in_dim: 3  # [x, y, load] -- dropped signed_distance_to_hole, see
+                  # src/graph.py's build_graph() docstring / PROJECT_FLOW.md phase 10
   edge_in_dim: 2
   out_dim: 3
   latent_dim: 32

@@ -13,25 +13,32 @@ import pyvista as pv
 
 def build_graph(case):
     """
-    Node features: [x, y, signed_distance_to_hole, load_magnitude]  (N, 4)
+    Node features: [x, y, load_magnitude]  (N, 3)
     Edges: element-edge connectivity, made bidirectional.
     Edge features: relative position (dst - src)  (2*E, 2)
     Targets: [u_x, u_y, von_mises]  (N, 3)
 
     `case` is the dict returned by src/data.py::load_case (one case_NNN.json).
+
+    No hole geometry (radius/center) is read from `case["params"]` here,
+    deliberately -- earlier versions hand-computed a signed-distance-to-hole
+    feature directly from those known params, which meant the model was
+    being handed the answer rather than learning hole-proximity effects from
+    the mesh itself (see PROJECT_FLOW.md phase 10). Position + mesh
+    connectivity carry that information implicitly (nodes near a hole
+    boundary have distinctive local structure); dropping the engineered
+    feature is what makes this generalize to geometry the hand-derived
+    feature couldn't describe at all -- e.g. a varying *number* of holes.
     """
     labels = sorted(case["nodes"].keys(), key=int)
     label_to_idx = {label: i for i, label in enumerate(labels)}
 
     position = np.array([case["nodes"][label] for label in labels], dtype=np.float64)
 
-    params = case["params"]
-    hole_center = np.array([params["hole_x"], params["hole_y"]])
-    signed_distance = np.linalg.norm(position - hole_center, axis=1) - params["hole_r"]
-    load_magnitude = np.full(len(labels), params["load"])
+    load_magnitude = np.full(len(labels), case["params"]["load"])
 
     node_features = np.concatenate(
-        [position, signed_distance[:, None], load_magnitude[:, None]], axis=1
+        [position, load_magnitude[:, None]], axis=1
     )
 
     displacement = np.array([case["displacement"][label] for label in labels])
