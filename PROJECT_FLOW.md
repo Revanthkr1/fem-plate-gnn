@@ -239,13 +239,44 @@ that specific job. Candidate next steps (not yet decided): more epochs,
 more model capacity, a peak-stress-weighted loss (mirroring the AirfRANS
 project's wall-distance-weighted loss precedent), or more training data.
 
+## Phase 9 — Retrain to 250 epochs: undertraining hypothesis confirmed
+
+Cheapest candidate fix tried first: bumped `max_epochs` 100 -> 250 (fresh
+run, new checkpoint path `meshgraphnet_250ep.ckpt` -- see `configs/base.yaml`
+and both notebooks' section-5/4 markdown for why resuming the old checkpoint
+would have corrupted the Cosine-annealing schedule instead of cleanly
+isolating this one variable). Checkpoint verified the same way as the first
+run (`node_encoder` input dim 4, `epoch=249`, `global_step=11250` = 180
+cases / 4 accum steps * 250 epochs, exact match) before evaluating.
+
+Same 20 held-out cases (180-199), same `src/evaluate.py`:
+
+| Metric | 100 epochs | 250 epochs |
+|---|---|---|
+| u_x rel L2 | 37.8% | 39.6% (unchanged -- metric artifact, see phase 8) |
+| u_y rel L2 | 4.8% | 5.6% (unchanged) |
+| von_mises rel L2 (bulk) | 13.5% | 12.5% (unchanged) |
+| **peak von_mises rel L2** | **37.1%** | **6.0%** |
+| **mean peak-location error** | **18.1mm** | **9.8mm** |
+
+**Result: hypothesis confirmed.** Bulk field accuracy barely moved between
+100 and 250 epochs, but peak-stress accuracy improved 6x (37% -> 6% relative
+error) and location error roughly halved. The weakness really was
+undertraining, specifically on the sparse, hard-to-learn signal near the
+hole -- only ~1-2% of nodes carry that information, so it converges far
+slower than the smooth bulk field under plain MSE. Model capacity and the
+loss function were not the bottleneck this time; more training time was.
+
+6% peak-magnitude error / ~10mm location error is a solid result for a first
+real surrogate, not a perfect one -- open question for later: does pushing
+epochs further keep helping, or has this run hit diminishing returns.
+
 ## Remaining phases
 
-9. Decide on and try an improvement direction for peak-stress accuracy (more
-   epochs, more model capacity, a peak-stress-weighted loss, or more data).
-10. "Copilot" demo (geometry/parameters in, instant prediction out via the
+10. Decide whether 250-epoch accuracy is good enough to move on, or worth
+    pushing further (more epochs, or a peak-stress-weighted loss on top).
+11. "Copilot" demo (geometry/parameters in, instant prediction out via the
     trained GNN — mirroring how Neural Concept's actual product works, not a
-    natural-language agent) — comes after peak-stress accuracy is actually
-    trustworthy, not before.
-11. README narrative, and — if desired — a PhysicsNeMo v2 port, mirroring
+    natural-language agent).
+12. README narrative, and — if desired — a PhysicsNeMo v2 port, mirroring
     the AirfRANS project's stated ambition.
