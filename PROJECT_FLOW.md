@@ -239,7 +239,7 @@ that specific job. Candidate next steps (not yet decided): more epochs,
 more model capacity, a peak-stress-weighted loss (mirroring the AirfRANS
 project's wall-distance-weighted loss precedent), or more training data.
 
-## Phase 9 — Retrain to 250 epochs: undertraining hypothesis confirmed
+## Phase 9 — Retrain to 250 epochs (result muddied by a checkpoint-collision bug -- see phase 10)
 
 Cheapest candidate fix tried first: bumped `max_epochs` 100 -> 250 (fresh
 run, new checkpoint path `meshgraphnet_250ep.ckpt` -- see `configs/base.yaml`
@@ -259,24 +259,82 @@ Same 20 held-out cases (180-199), same `src/evaluate.py`:
 | **peak von_mises rel L2** | **37.1%** | **6.0%** |
 | **mean peak-location error** | **18.1mm** | **9.8mm** |
 
-**Result: hypothesis confirmed.** Bulk field accuracy barely moved between
-100 and 250 epochs, but peak-stress accuracy improved 6x (37% -> 6% relative
-error) and location error roughly halved. The weakness really was
-undertraining, specifically on the sparse, hard-to-learn signal near the
-hole -- only ~1-2% of nodes carry that information, so it converges far
-slower than the smooth bulk field under plain MSE. Model capacity and the
-loss function were not the bottleneck this time; more training time was.
+**Result: peak-stress accuracy improved a lot, but the experiment wasn't as
+clean as reported at the time.** Bulk field accuracy barely moved between
+runs, while peak-stress accuracy improved 6x (37% -> 6% relative error) and
+location error roughly halved. Original writeup called this a controlled
+"100 vs 250 epochs, fresh run" comparison -- **that part turned out to be
+wrong.**
 
-6% peak-magnitude error / ~10mm location error is a solid result for a first
-real surrogate, not a perfect one -- open question for later: does pushing
-epochs further keep helping, or has this run hit diminishing returns.
+Caught during phase 10 (see below): `src/train.py`'s auto-resume
+glob-searches the whole *directory* a checkpoint lives in for any
+`mgn-epoch=*.ckpt` file, not just the specific final filename. Phase 8's
+`meshgraphnet.ckpt` and phase 9's `meshgraphnet_250ep.ckpt` both lived in the
+same flat `DRIVE_ROOT` folder on Drive -- changing the final filename didn't
+stop the auto-resume from finding phase 8's periodic `mgn-epoch=099.ckpt` and
+silently resuming from it (no crash, since both runs shared the same
+4-feature architecture -- the mismatch only became obvious once phase 10
+changed `node_in_dim` and the *same* collision produced a loud shape-mismatch
+error instead of a silent resume). Inspecting the actual phase-9 checkpoint
+confirms it: `lr_schedulers[0]['T_max']` is **100**, not 250 -- the Cosine
+schedule had already annealed to 0 by epoch 100 during phase 8, then phase 9
+continued 150 more epochs with `T_max` still stuck at 100 (not rebuilt for
+the new `max_epochs=250`), so the back half of "phase 9" trained under a
+cyclical/re-warming LR pattern rather than the intended smooth 250-epoch
+anneal.
+
+**Honest read**: the model did receive substantially more cumulative
+training (350 total epochs across both runs, continued rather than
+independent), so "more training helps peak-stress accuracy" is probably
+still directionally true -- but this was not the clean, isolated
+100-vs-250-epochs comparison it was described as. A genuinely clean rerun
+(fresh weights, real 250-epoch schedule, own checkpoint subdirectory) would
+be needed to actually confirm the undertraining hypothesis in isolation;
+not yet decided whether that's worth doing given the current result is
+already usable.
+
+## Phase 10 — Non-parametric ablation: drop the hand-engineered geometry feature (in progress)
+
+Motivated by researching Neural Concept for context: their surrogate is
+**non-parametric** (trains directly on raw mesh geometry, no hand-crafted
+parameterization), while ours was being handed the hole's exact
+center/radius as a feature (`signed_distance_to_hole`) instead of learning
+proximity effects from the mesh itself. Full plan (this phase + phase 11,
+variable hole count, the actual generalization test) in
+`.claude/plans/optimized-gliding-cookie.md`.
+
+Changes: `src/graph.py::build_graph()` no longer reads hole geometry from
+`params` at all -- `node_features` is now `[x, y, load]` (3, down from 4).
+`configs/base.yaml` (`node_in_dim: 3`), `data/norm_stats.npz` recomputed,
+local `data/cache/` regenerated, both notebooks updated to match.
+
+**Bug found and fixed while setting up this run's retraining** (this is the
+same bug that muddied phase 9, see above): `src/train.py`'s auto-resume
+glob-searches the *entire directory* a checkpoint path lives in for any
+`mgn-epoch=*.ckpt` file -- changing only the final checkpoint's filename
+(what phase 9 did) doesn't prevent collision with periodic checkpoints from
+a different run sitting in the same directory. This phase's attempt crashed
+loudly with a shape mismatch (`[64, 4]` vs `[64, 3]`) trying to resume into
+phase 9's checkpoint, which is what surfaced the bug -- phase 9's version of
+the same collision didn't crash (same 4-feature architecture both times) and
+went unnoticed until now. **Fix**: every experiment now gets its own
+checkpoint *subdirectory* (e.g. `DRIVE_ROOT/nogeomfeat/`), not just a
+different filename in a shared directory -- applied to both notebooks.
+
+Status: retraining in progress on Colab/Kaggle; not yet evaluated.
 
 ## Remaining phases
 
-10. Decide whether 250-epoch accuracy is good enough to move on, or worth
-    pushing further (more epochs, or a peak-stress-weighted loss on top).
-11. "Copilot" demo (geometry/parameters in, instant prediction out via the
+11. Evaluate the phase-10 ablation run on the same 20 held-out cases; decide
+    whether to also do a genuinely clean rerun of the phase-9 comparison
+    (fresh weights, isolated checkpoint directory) to properly confirm the
+    undertraining hypothesis, given the current result is muddied but
+    probably still directionally right.
+12. Phase 11 from the plan: variable hole count (0-3), rejection-sampled
+    placement, and a held-out-hole-*count* generalization test -- the actual
+    "does this generalize to different geometry" demonstration.
+13. "Copilot" demo (geometry/parameters in, instant prediction out via the
     trained GNN — mirroring how Neural Concept's actual product works, not a
     natural-language agent).
-12. README narrative, and — if desired — a PhysicsNeMo v2 port, mirroring
+14. README narrative, and — if desired — a PhysicsNeMo v2 port, mirroring
     the AirfRANS project's stated ambition.
