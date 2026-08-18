@@ -34,7 +34,10 @@ model:
   n_message_passing: 4
 
 training:
-  max_epochs: 100
+  max_epochs: 250  # bumped from 100 -- first full run's peak-stress accuracy was
+                   # weak (37% relative error, 18mm location miss on the 20-case
+                   # holdout, see PROJECT_FLOW.md phase 8); cheapest thing to try
+                   # first before touching model capacity or the loss function
   batch_size: 1
   accumulate_grad_batches: 4
   n_val: 20  # 10% holdout -- was 2 for the 3-case overfit test, too thin now that
