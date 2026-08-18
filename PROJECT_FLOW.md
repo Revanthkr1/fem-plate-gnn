@@ -196,19 +196,56 @@ assuming anything is broken — campus load, not code, was the cause in every
 stall observed here. Off-peak hours (evening, in this case) cleared the
 contention within minutes of relaunching.
 
+## Phase 8 — First full training run + evaluation (done, mixed result)
+
+Trained on Colab: all 200 cases, 180/20 train/val split, `configs/base.yaml`
+hyperparameters (latent_dim=32, hidden_dim=64, n_message_passing=4,
+max_epochs=100), plain MSE loss. Checkpoint verified against the saved
+`state_dict` (`node_encoder` input dim 4, `global_step=4500` = 180 cases / 4
+accum steps * 100 epochs, exactly as expected) before evaluating -- confirmed
+this really is the fully-trained FEM checkpoint, not an AirfRANS one (both
+projects' checkpoints share the same `mgn-epoch=NNN.ckpt` naming).
+
+Wrote `src/evaluate.py` (ported from AirfRANS's pattern) and ran it on the
+20 held-out cases (ids 180-199):
+
+| Field | Relative L2 | Mean abs error |
+|---|---|---|
+| u_x | 38% (8-131% per-case spread) | 0.0031 mm |
+| u_y | 4.8% | 0.0027 mm |
+| von_mises | 13.5% | 10.8 MPa |
+
+Peak-stress sanity check (this project's analogue of AirfRANS's Cd/Cl check --
+literal Kirsch SCF doesn't apply per-case once plasticity is active):
+**peak von Mises relative error 37%, mean peak-location miss 18.1mm** (on a
+100x200mm plate with 3-15mm hole radii).
+
+**Reading these numbers**: u_x's huge relative-L2 spread is a metric
+artifact, not a real weakness -- its absolute error (0.0031mm) is essentially
+identical to u_y's (0.0027mm), but u_x (lateral Poisson-effect displacement)
+is 6-7x smaller in magnitude than u_y (primary load-direction displacement)
+in every case checked, so the same absolute error divides into a much bigger
+relative number. Exactly the near-zero-denominator pathology
+`metrics.py::relative_l2_per_field`'s own docstring warns about --
+`mean_abs_error_per_field` is the right lens for this field, not something to
+chase by changing the model.
+
+The genuine concern is the peak-stress localization: the bulk von Mises field
+is decent (13.5% relative L2), but the model isn't reliably finding *where*
+or *how bad* the worst-case stress is -- the number that matters most for an
+actual structural surrogate, since it's what predicts failure. First full
+pass through the pipeline works end-to-end, but isn't yet trustworthy for
+that specific job. Candidate next steps (not yet decided): more epochs,
+more model capacity, a peak-stress-weighted loss (mirroring the AirfRANS
+project's wall-distance-weighted loss precedent), or more training data.
+
 ## Remaining phases
 
-8. Move real training to Colab (200 full-resolution cases is well past what
-   the local 4GB GPU should take on), mirroring the AirfRANS project's
-   `colab_setup.ipynb`/`kaggle_setup.ipynb` pattern. Recompute normalization
-   stats over the full 200 (currently `norm_stats.npz` only reflects the
-   original 10).
-9. Evaluate with per-field relative L2 on a held-out split (u_x, u_y,
-   von_mises reported separately) plus the Kirsch-style physical sanity
-   check applied per-case.
+9. Decide on and try an improvement direction for peak-stress accuracy (more
+   epochs, more model capacity, a peak-stress-weighted loss, or more data).
 10. "Copilot" demo (geometry/parameters in, instant prediction out via the
     trained GNN — mirroring how Neural Concept's actual product works, not a
-    natural-language agent) — comes after training and evaluation, not
-    before.
+    natural-language agent) — comes after peak-stress accuracy is actually
+    trustworthy, not before.
 11. README narrative, and — if desired — a PhysicsNeMo v2 port, mirroring
     the AirfRANS project's stated ambition.
