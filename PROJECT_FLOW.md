@@ -321,7 +321,44 @@ went unnoticed until now. **Fix**: every experiment now gets its own
 checkpoint *subdirectory* (e.g. `DRIVE_ROOT/nogeomfeat/`), not just a
 different filename in a shared directory -- applied to both notebooks.
 
-Status: retraining in progress on Colab/Kaggle; not yet evaluated.
+**Result: the gate did not pass -- dropping the feature caused a real
+regression.** Checkpoint verified clean this time (`node_encoder` input dim
+3, `epoch=250`, `global_step=11250`, and critically `lr_schedulers[0].T_max
+== 250` -- confirming this really was a fresh, isolated 250-epoch run, not
+another silent resume). Evaluated on the same 20 held-out cases:
+
+| Metric | Phase 8 (100ep, clean, **with** feature) | Phase 10 (250ep, clean, **without** feature) |
+|---|---|---|
+| u_y rel L2 | 4.8% | 4.5% (unchanged) |
+| von_mises rel L2 (bulk) | 13.5% | 14.5% (unchanged) |
+| peak von_mises rel L2 | 37.1% | 37.4% (unchanged) |
+| **mean peak-location error** | **18.1mm** | **51.6mm** |
+
+Even with 2.5x the training of the clean baseline, removing
+`signed_distance_to_hole` left peak-*magnitude* accuracy about the same but
+made peak-*location* accuracy dramatically worse (worst location error seen
+in the project so far). Useful negative result, not a dead end: it isolates
+what the feature was actually doing -- helping the model know **where** to
+expect the concentration, not how big it gets. Plausible root cause: with no
+explicit distance feature, the model's only path to "where's the hole" is
+message-passing hops from local mesh curvature, and `n_message_passing=4`
+(`configs/base.yaml`) gives each node only 4 hops of receptive field --
+nowhere near enough for a distant node to infer global hole-relative
+position purely from propagated local curvature cues.
+
+Per the plan's explicit gate, this blocks moving straight to phase 11
+(variable hole count) without addressing it first -- phase 11 would just
+inherit the same localization weakness on a harder problem. Candidate next
+steps, not yet decided: (a) increase `n_message_passing` so more hops are
+available before dropping the feature; (b) a middle ground -- replace the
+hand-computed `signed_distance_to_hole` (which hardcodes "one circular hole,
+known params") with a graph-native distance feature computed purely from
+mesh topology (e.g. BFS hop-count to the nearest interior/hole boundary
+edge, detectable from connectivity alone, no hole_r/x/y needed) -- keeps the
+"no hand-fed exact geometry" property while still generalizing across hole
+count/shape; (c) accept the with-feature version as the one to build phase
+11 on top of, treating true non-parametric generalization as a separate,
+harder stretch goal.
 
 ## Remaining phases
 
