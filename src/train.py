@@ -29,10 +29,12 @@ from src.dataset import CachedPyGPlateHoleDataset
 from src.metrics import relative_l2_per_field
 from src.model import MeshGraphNet
 
-# MeshGraphNet's own defaults -- NOT scaled up yet. Per project convention
-# (CLAUDE.md): don't tune architecture/hyperparameters before the model has
-# been shown to overfit deliberately on a handful of cases.
-DEFAULT_MODEL_KWARGS = {"latent_dim": 32, "hidden_dim": 64, "n_message_passing": 4}
+# n_message_passing=8 (up from MeshGraphNet's original default of 4) --
+# phase 10's non-parametric ablation needed the extra hops for peak-stress
+# localization to work at all (18.1mm -> 51.6mm -> 4.9mm across phases
+# 8/10/10b, see PROJECT_FLOW.md). latent_dim/hidden_dim are still
+# MeshGraphNet's own un-scaled-up defaults.
+DEFAULT_MODEL_KWARGS = {"latent_dim": 32, "hidden_dim": 64, "n_message_passing": 8}
 
 
 class TrainModule(L.LightningModule):

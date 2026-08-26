@@ -346,19 +346,41 @@ message-passing hops from local mesh curvature, and `n_message_passing=4`
 nowhere near enough for a distant node to infer global hole-relative
 position purely from propagated local curvature cues.
 
-Per the plan's explicit gate, this blocks moving straight to phase 11
-(variable hole count) without addressing it first -- phase 11 would just
-inherit the same localization weakness on a harder problem. Candidate next
-steps, not yet decided: (a) increase `n_message_passing` so more hops are
-available before dropping the feature; (b) a middle ground -- replace the
-hand-computed `signed_distance_to_hole` (which hardcodes "one circular hole,
-known params") with a graph-native distance feature computed purely from
-mesh topology (e.g. BFS hop-count to the nearest interior/hole boundary
-edge, detectable from connectivity alone, no hole_r/x/y needed) -- keeps the
-"no hand-fed exact geometry" property while still generalizing across hole
-count/shape; (c) accept the with-feature version as the one to build phase
-11 on top of, treating true non-parametric generalization as a separate,
-harder stretch goal.
+Per the plan's explicit gate, this blocked moving straight to phase 11
+(variable hole count) without addressing it first. Candidates considered:
+(a) increase `n_message_passing`; (b) a topology-native distance feature
+(BFS hop-count to nearest hole boundary, no hole_r/x/y needed); (c) accept
+the with-feature version and treat non-parametric as a stretch goal. User
+picked (a) first, as the cheapest to test.
+
+## Phase 10b — More message-passing hops: gate passed, non-parametric now wins outright
+
+`n_message_passing` 4 -> 8 (`configs/base.yaml`), same 3-feature
+(`[x, y, load]`) representation, same 250-epoch budget, own checkpoint
+subdirectory (`.../moremp/`, learned from the phase-9 collision). Checkpoint
+verified clean: `node_encoder` input dim 3, 8 message-passing blocks (up
+from 4), `epoch=249`, `global_step=11250`, `lr_schedulers[0].T_max == 250`.
+
+| Model | Features | Peak von Mises rel L2 | Peak-location error |
+|---|---|---|---|
+| Phase 8 (100ep, clean, **with** feature) | 4 | 37.1% | 18.1mm |
+| Phase 9 (muddied, ~350 cumulative epochs, **with** feature) | 4 | 6.0% | 9.8mm |
+| Phase 10 (250ep clean, **no** feature, 4 hops) | 3 | 37.4% | 51.6mm |
+| **Phase 10b (250ep clean, no feature, 8 hops)** | 3 | **3.9%** | **4.9mm** |
+
+**Result: hypothesis confirmed, and then some.** The fully non-parametric
+model (no hand-fed hole geometry at all) now beats every previous result,
+including the best hand-engineered-feature run, on every metric -- bulk
+`von_mises` also improved slightly (11.9% vs. 12.5-14.5% in earlier runs).
+Confirms receptive field, not the missing feature itself, was the real
+bottleneck: once nodes have enough hops to propagate hole-boundary signal
+(finer local mesh spacing near holes is self-detectable, no external hint
+needed), the model learns to both find and size the stress concentration
+better than when it was handed the answer directly. This is the actual
+"Neural Concept style" result being aimed for -- geometry generalization
+learned from the mesh, not from hand parameterization.
+
+This is now the base to build phase 11 (variable hole count) on top of.
 
 ## Remaining phases
 

@@ -46,7 +46,7 @@ class MeshGraphNet(nn.Module):
         out_dim=3,
         latent_dim=32,
         hidden_dim=64,
-        n_message_passing=4,
+        n_message_passing=8,
     ):
         super().__init__()
         self.node_encoder = mlp(node_in_dim, hidden_dim, latent_dim)
