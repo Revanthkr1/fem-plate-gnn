@@ -382,6 +382,23 @@ learned from the mesh, not from hand parameterization.
 
 This is now the base to build phase 11 (variable hole count) on top of.
 
+**Full take-stock evaluation** (all 200 cases, train vs. held-out split,
+before starting phase 11) -- `data/eval_full_200_moremp.json` has full
+per-case detail:
+
+| Metric | Train (180 cases) | Held-out (20 cases) |
+|---|---|---|
+| u_y rel L2 | 4.6% | 4.6% |
+| von_mises rel L2 (bulk) | 11.4% | 11.9% |
+| peak von_mises rel L2 | 4.1% | 3.9% |
+| mean peak-location error | 7.5mm | 4.9mm |
+
+Train and held-out are nearly identical across every metric -- held-out is
+even marginally *better* on two of them, well within noise. This rules out
+the model simply memorizing training cases; it's a genuinely well-calibrated
+fit at this dataset size, not an overfit one that would look great on train
+and fall apart on new data.
+
 ## Remaining phases
 
 11. Evaluate the phase-10 ablation run on the same 20 held-out cases; decide
