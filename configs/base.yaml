@@ -32,7 +32,21 @@ model:
   out_dim: 3
   latent_dim: 32
   hidden_dim: 64
-  n_message_passing: 4
+  n_message_passing: 8  # bumped from 4 -- phase 10's non-parametric (no
+                        # signed_distance_to_hole) model regressed badly on
+                        # peak-stress location (18.1mm -> 51.6mm) even with
+                        # 250 clean epochs. Working theory: with no explicit
+                        # distance feature, a node's only path to "where's
+                        # the hole" is message-passing hops from hole-
+                        # boundary nodes (whose local mesh is finer, so
+                        # locally self-detectable) -- 4 hops * ~2mm mesh
+                        # spacing gives only ~8mm of reach, nowhere near
+                        # enough for holes up to 15mm radius needing a
+                        # multi-diameter correction zone. This is a genuine
+                        # diagnostic, not a guaranteed fix -- see
+                        # PROJECT_FLOW.md phase 10/11 for the honest caveat
+                        # that even 8 hops (~16mm) may still fall short for
+                        # the largest holes / most distant nodes.
 
 training:
   max_epochs: 250  # bumped from 100 -- first full run's peak-stress accuracy was
