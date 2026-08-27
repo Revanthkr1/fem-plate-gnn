@@ -1,12 +1,16 @@
 # -*- coding: mbcs -*-
 # Run with: abaqus cae noGUI=src/generate_dataset.py
 #
-# Phase 3: parametrized batch generation. Loops N_CASES random (hole radius,
-# hole position, load) draws through a single CAE session -- avoids the
-# ~15-20s per-invocation startup cost of spawning `abaqus cae` N separate
-# times -- solves each, extracts mesh + fields to a compact per-case JSON,
-# and discards the heavy Abaqus job artifacts (.odb/.sta/.msg/...) to save
-# disk, mirroring the AirfRANS project's cache-then-discard convention.
+# Phase 3 (cases 0-199): parametrized batch generation, exactly one circular
+# hole per case, hole radius/position/load randomized. Phase 11 (cases
+# 200+): variable hole COUNT (0-3) via rejection-sampled placement -- the
+# actual geometric-generalization test, not just interpolating within one
+# template. Both share the same loop: draws random params, solves each case
+# through a single CAE session (avoids the ~15-20s per-invocation startup
+# cost of spawning `abaqus cae` N separate times), extracts mesh + fields to
+# a compact per-case JSON, and discards the heavy Abaqus job artifacts
+# (.odb/.sta/.msg/...) to save disk, mirroring the AirfRANS project's
+# cache-then-discard convention.
 
 import json
 import os
@@ -31,25 +35,28 @@ PLASTIC_TABLE = ((250.0, 0.0), (300.0, 0.01), (400.0, 0.05))
 MESH_SIZE = 2.0
 MESH_SIZE_HOLE_FACTOR = 0.15  # local seed size = hole radius * this factor
 
-# 10-case smoke-test batch (case_000-009) already validated end-to-end
-# (overfit test hit 1-4% per-field relative L2). Continuing from case 10 up
-# to 200 total for real training -- START_CASE/N_CASES let this run be
-# extended again later without touching already-generated cases.
-START_CASE = 10
-N_CASES = 190  # full remaining range queued at once -- the standard-license
-               # pool is a shared campus server that was seen fully saturated
-               # (80/80) for 25+ min with no sign of easing, so smaller
-               # chunks buy nothing (nothing proceeds until a token frees
-               # regardless of batch size). Abaqus's own per-job queue plus
-               # this script's per-case try/except mean the whole range can
-               # be left running unattended: each case waits its turn for a
-               # token, and one bad case doesn't block the rest.
+# Cases 0-199 (single hole, hole_r/x/y varying) already generated and
+# trained on -- see PROJECT_FLOW.md phases 3-10b. Phase 11 continues from
+# case 200: variable hole COUNT (0-3), the actual geometric-generalization
+# test, not just interpolating within one template.
+START_CASE = 200
+N_CASES = 200  # ~50 cases/bucket across counts {0,1,2,3} -- enough to train
+               # on {0,1,2} and hold out an entire unseen count (3) as the
+               # generalization test, per the phase-11 plan, while the
+               # original 200 single-hole cases add extra data to the
+               # count=1 bucket.
 RANDOM_SEED = 0  # combined with case_id per-case (see sample_params) -- a
                  # given case_id always draws the same params regardless of
                  # what range of cases a given run covers.
 HOLE_R_RANGE = (3.0, 15.0)
 HOLE_MARGIN = 12.0  # min distance from hole edge to any plate boundary
 LOAD_RANGE = (0.05, 0.20)  # mm, top edge displacement
+HOLE_COUNT_RANGE = (0, 3)  # inclusive both ends -- randint draws 0,1,2, or 3
+MIN_HOLE_GAP = 5.0  # mm, minimum gap between two holes' boundaries
+MAX_PLACEMENT_ATTEMPTS = 50  # per hole, before falling back to fewer holes
+                              # for that case (logged, not a crash -- same
+                              # "log and skip" convention as non-converging
+                              # Abaqus jobs)
 
 INSTANCE_NAME = 'Plate-1'
 OUTPUT_DIR = os.path.join('..', '..', 'raw')  # data/runs/<batch> -> data/raw
@@ -64,17 +71,40 @@ def log(msg):
         f.write(msg + '\n')
 
 
+def _fits(x, y, r, existing_holes):
+    for h in existing_holes:
+        dist = ((x - h['hole_x']) ** 2 + (y - h['hole_y']) ** 2) ** 0.5
+        if dist < r + h['hole_r'] + MIN_HOLE_GAP:
+            return False
+    return True
+
+
 def sample_params(case_id):
     rng = random.Random(RANDOM_SEED + case_id)
-    hole_r = rng.uniform(*HOLE_R_RANGE)
-    x_lo = hole_r + HOLE_MARGIN
-    x_hi = PLATE_W - hole_r - HOLE_MARGIN
-    y_lo = hole_r + HOLE_MARGIN
-    y_hi = PLATE_H - hole_r - HOLE_MARGIN
-    hole_x = rng.uniform(x_lo, x_hi)
-    hole_y = rng.uniform(y_lo, y_hi)
+    target_count = rng.randint(*HOLE_COUNT_RANGE)
+
+    holes = []
+    for _ in range(target_count):
+        placed = False
+        for _attempt in range(MAX_PLACEMENT_ATTEMPTS):
+            hole_r = rng.uniform(*HOLE_R_RANGE)
+            x_lo, x_hi = hole_r + HOLE_MARGIN, PLATE_W - hole_r - HOLE_MARGIN
+            y_lo, y_hi = hole_r + HOLE_MARGIN, PLATE_H - hole_r - HOLE_MARGIN
+            hole_x = rng.uniform(x_lo, x_hi)
+            hole_y = rng.uniform(y_lo, y_hi)
+            if _fits(hole_x, hole_y, hole_r, holes):
+                holes.append({'hole_r': hole_r, 'hole_x': hole_x, 'hole_y': hole_y})
+                placed = True
+                break
+        if not placed:
+            log('  case %d: could not place hole %d/%d after %d attempts -- '
+                'falling back to %d holes' % (
+                    case_id, len(holes) + 1, target_count,
+                    MAX_PLACEMENT_ATTEMPTS, len(holes)))
+            break
+
     load = rng.uniform(*LOAD_RANGE)
-    return {'hole_r': hole_r, 'hole_x': hole_x, 'hole_y': hole_y, 'load': load}
+    return {'holes': holes, 'load': load}
 
 
 def build_and_submit(params, job_name, model_name):
@@ -88,16 +118,20 @@ def build_and_submit(params, job_name, model_name):
         mdb.Model(name=model_name)
     model = mdb.models[model_name]
 
-    hole_r = params['hole_r']
-    hole_x = params['hole_x']
-    hole_y = params['hole_y']
+    holes = params['holes']
     load = params['load']
 
     sketch = model.ConstrainedSketch(
         name='PlateProfile', sheetSize=max(PLATE_W, PLATE_H) * 2.0)
     sketch.rectangle(point1=(0.0, 0.0), point2=(PLATE_W, PLATE_H))
-    sketch.CircleByCenterPerimeter(
-        center=(hole_x, hole_y), point1=(hole_x + hole_r, hole_y))
+    # 0 holes is just the rectangle with this loop skipped -- a valid
+    # degenerate case, not a special one. Abaqus's sketch API supports
+    # multiple internal loops in one profile natively; BaseShell() below
+    # recognizes each one as a hole the same way it does for a single hole.
+    for hole in holes:
+        sketch.CircleByCenterPerimeter(
+            center=(hole['hole_x'], hole['hole_y']),
+            point1=(hole['hole_x'] + hole['hole_r'], hole['hole_y']))
 
     part = model.Part(
         name='Plate', dimensionality=TWO_D_PLANAR, type=DEFORMABLE_BODY)
@@ -138,12 +172,15 @@ def build_and_submit(params, job_name, model_name):
         regions=(part.faces,),
         elemTypes=(ElemType(elemCode=CPS4R, elemLibrary=STANDARD),))
     part.seedPart(size=MESH_SIZE)
-    hole_edges = part.edges.getByBoundingCylinder(
-        center1=(hole_x, hole_y, -1.0), center2=(hole_x, hole_y, 1.0),
-        radius=hole_r + BB_TOL)
-    part.seedEdgeBySize(
-        edges=hole_edges, size=max(hole_r * MESH_SIZE_HOLE_FACTOR, 0.3),
-        constraint=FINER)
+    for hole in holes:
+        hole_edges = part.edges.getByBoundingCylinder(
+            center1=(hole['hole_x'], hole['hole_y'], -1.0),
+            center2=(hole['hole_x'], hole['hole_y'], 1.0),
+            radius=hole['hole_r'] + BB_TOL)
+        part.seedEdgeBySize(
+            edges=hole_edges,
+            size=max(hole['hole_r'] * MESH_SIZE_HOLE_FACTOR, 0.3),
+            constraint=FINER)
     part.generateMesh()
     assembly.regenerate()
 
