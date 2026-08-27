@@ -399,18 +399,57 @@ the model simply memorizing training cases; it's a genuinely well-calibrated
 fit at this dataset size, not an overfit one that would look great on train
 and fall apart on new data.
 
+## Phase 11 — Variable hole count: data generation (done)
+
+Extended `src/generate_dataset.py` for the actual geometric-generalization
+test: hole *count* now varies (0-3), not just radius/position within one
+template. `sample_params()` draws a target count, then rejection-samples
+each hole's `(r, x, y)` (retry on edge-margin violation or overlap with an
+already-placed hole, capped at 50 attempts/hole, falls back to fewer holes
+and logs it rather than crashing -- never triggered in the actual run, 0
+fallbacks across 200 cases). `build_and_submit()` loops the sketch/mesh-
+seeding per hole; 0 holes is just the rectangle with the loop skipped, not a
+special case. `params` format changes to `{"holes": [...], "load": ...}` --
+not a breaking change in practice, since `build_graph()` (post phase 10)
+never reads hole geometry from `params`, only `params["load"]`.
+
+**Verified on one hardcoded 2-hole case first** (`src/verify_multihole.py`)
+before trusting the randomized batch: job solved, 8589 nodes, and critically
+**no mesh nodes found inside either hole** -- confirms both holes are real
+voids in the mesh (the multi-loop sketch mechanism works), not one silently
+swallowing the other.
+
+Generated cases 200-399: **200/200 succeeded, 0 failures, 0 placement
+fallbacks**. Hole-count distribution: 0 holes=57, 1 hole=46 (+200 from the
+original single-hole cases = 246 total), 2 holes=46, 3 holes=51.
+
+**The actual generalization split** (`src/splits.py::hole_count_splits()`):
+holds out every count=3 case (51 total) from training entirely -- the real
+test of whether the model generalizes to a hole count it has never seen, not
+just a new radius/position within a count it has seen. Remaining 349 cases
+(counts 0/1/2) split into 329 train + 20 in-distribution validation (random,
+seeded). `norm_stats.npz` recomputed over the 349 in-distribution cases only
+-- excludes the held-out count=3 bucket so normalization can't leak any
+information about it.
+
+Architecture carried over unchanged from phase 10b (`node_in_dim=3`,
+`n_message_passing=8` -- no hand-fed hole geometry, the validated
+non-parametric setup). Training queued next; own checkpoint subdirectory
+(`.../phase11/`), same collision-avoidance discipline as every run since
+phase 9.
+
 ## Remaining phases
 
-11. Evaluate the phase-10 ablation run on the same 20 held-out cases; decide
-    whether to also do a genuinely clean rerun of the phase-9 comparison
-    (fresh weights, isolated checkpoint directory) to properly confirm the
-    undertraining hypothesis, given the current result is muddied but
-    probably still directionally right.
-12. Phase 11 from the plan: variable hole count (0-3), rejection-sampled
-    placement, and a held-out-hole-*count* generalization test -- the actual
-    "does this generalize to different geometry" demonstration.
-13. "Copilot" demo (geometry/parameters in, instant prediction out via the
+12. Train phase 11 on Colab/Kaggle; evaluate on *both* splits -- the normal
+    in-distribution holdout (expect similar to phase 10b's ~4-5%/~5-8mm) and,
+    the actual point of this phase, the held-out count=3 cases. Report both,
+    honestly, even if count=3 is meaningfully worse.
+13. Decide whether to also do a genuinely clean rerun of the phase-9
+    comparison (fresh weights, isolated checkpoint directory) to confirm the
+    undertraining hypothesis in isolation -- open since phase 9, low
+    priority now that phase 10b's result stands on its own regardless.
+14. "Copilot" demo (geometry/parameters in, instant prediction out via the
     trained GNN — mirroring how Neural Concept's actual product works, not a
     natural-language agent).
-14. README narrative, and — if desired — a PhysicsNeMo v2 port, mirroring
+15. README narrative, and — if desired — a PhysicsNeMo v2 port, mirroring
     the AirfRANS project's stated ambition.
