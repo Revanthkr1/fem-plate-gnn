@@ -508,11 +508,52 @@ later when someone happens to inspect a checkpoint's internals.
 
 Phase 11c needs re-running clean before its result can be trusted.
 
+## Phase 11c2 — Clean 500-epoch retry: reveals the earlier "small gap" was a floor effect
+
+Re-ran in a fresh subdirectory (`phase11c2/`), protected by the new guard.
+Checkpoint verified clean: `T_max=500` (matches `max_epochs`), `epoch=499`,
+`global_step=41500` (= 83 steps/epoch * 500 epochs, consistent).
+
+| Split | Peak magnitude error | Peak location error |
+|---|---|---|
+| Phase 11b (250ep, muddied) in-distribution | 31.6% | 43.9mm |
+| Phase 11b (250ep, muddied) OOD (count=3) | 33.2% | 49.0mm |
+| **Phase 11c2 (500ep, clean) in-distribution** | **4.2%** | **13.1mm** |
+| **Phase 11c2 (500ep, clean) OOD (count=3)** | **6.4%** | **47.8mm** |
+
+**This reframes phase 11b's conclusion.** More training fixed
+in-distribution accuracy dramatically (31.6%->4.2%, 43.9mm->13.1mm, now
+close to phase 10b's single-hole-specialist quality). But it barely moved
+the OOD location error (49.0mm -> 47.8mm, essentially flat), even though
+OOD magnitude error did improve (33.2%->6.4%). The real generalization gap
+is now exposed: 13.1mm in-distribution vs. 47.8mm on truly unseen hole
+count -- **~3.6x worse**, not the "small gap" phase 11b reported.
+
+Phase 11b's small in-dist-vs-OOD gap was a floor effect, not evidence of
+good generalization: undertaining was making everything look similarly bad
+(43.9mm and 49.0mm aren't that different when both are far from converged),
+which masked a real weakness underneath. Once in-distribution actually
+converged, the gap to genuinely unseen geometry became obvious. More
+training teaches the model to do very well on hole counts it has seen; it
+does not, by itself, teach it to transfer that precision to a hole count it
+has never seen -- that's a harder, structurally different problem
+(learning to generalize across a discrete structural variable, not just
+interpolating within a continuous parameter range like radius/position).
+
+This is a more rigorous and more interesting finding than the original
+report, even though less flattering -- catching that an apparently good
+result was actually an undertraining artifact is exactly the kind of
+verification this project's evaluation discipline is supposed to produce.
+
 ## Remaining phases
 
-13. Re-run phase 11c cleanly (fresh checkpoint directory, now protected by
-    the new resume-schedule guard) and evaluate on both splits, same as
-    phase 11b.
+13. Decide how to respond to the real generalization gap phase 11c2
+    exposed (13.1mm in-distribution vs. 47.8mm on unseen hole count).
+    Candidates: more training data spanning more hole counts so "count" is
+    less of a discrete jump; an explicit count-agnostic architectural
+    change (e.g. attention/pooling over per-hole local signals rather than
+    plain message-passing); or accepting this as the honest limit of the
+    current approach and documenting it as a finding, not a fix-it item.
 14. Decide whether to also do a genuinely clean rerun of the phase-9
     comparison (fresh weights, isolated checkpoint directory) to confirm the
     undertraining hypothesis in isolation -- open since phase 9, low

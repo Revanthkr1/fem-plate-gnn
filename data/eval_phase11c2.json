@@ -1,0 +1,876 @@
+{
+  "val": [
+    {
+      "case_id": 2,
+      "field_errors": {
+        "u_x": 0.10879797621251844,
+        "u_y": 0.03989065904007881,
+        "von_mises": 0.08827911884465336
+      },
+      "true_peak_von_mises": 254.18414306640625,
+      "pred_peak_von_mises": 254.87395827257518,
+      "peak_location_error_mm": 17.38956378751896,
+      "n_holes": 1
+    },
+    {
+      "case_id": 22,
+      "field_errors": {
+        "u_x": 1.4882974326841447,
+        "u_y": 0.13178501958515404,
+        "von_mises": 0.249717574776513
+      },
+      "true_peak_von_mises": 285.29847717285156,
+      "pred_peak_von_mises": 278.84536701970507,
+      "peak_location_error_mm": 28.99702262878418,
+      "n_holes": 1
+    },
+    {
+      "case_id": 65,
+      "field_errors": {
+        "u_x": 0.1584650043140413,
+        "u_y": 0.032119553601577984,
+        "von_mises": 0.08751896054331858
+      },
+      "true_peak_von_mises": 252.9776840209961,
+      "pred_peak_von_mises": 260.93031689270464,
+      "peak_location_error_mm": 0.0,
+      "n_holes": 1
+    },
+    {
+      "case_id": 88,
+      "field_errors": {
+        "u_x": 0.31654927702370816,
+        "u_y": 0.035903752071868376,
+        "von_mises": 0.09414695678302233
+      },
+      "true_peak_von_mises": 258.2073211669922,
+      "pred_peak_von_mises": 271.39249681554725,
+      "peak_location_error_mm": 15.53973388671875,
+      "n_holes": 1
+    },
+    {
+      "case_id": 121,
+      "field_errors": {
+        "u_x": 0.30487588272907756,
+        "u_y": 0.033665617553330536,
+        "von_mises": 0.1169493366075465
+      },
+      "true_peak_von_mises": 267.6779022216797,
+      "pred_peak_von_mises": 280.81464727855575,
+      "peak_location_error_mm": 1.1484778131422986,
+      "n_holes": 1
+    },
+    {
+      "case_id": 160,
+      "field_errors": {
+        "u_x": 0.10801788583890254,
+        "u_y": 0.02828332173509046,
+        "von_mises": 0.08143057586041808
+      },
+      "true_peak_von_mises": 256.94261169433594,
+      "pred_peak_von_mises": 263.0764107131713,
+      "peak_location_error_mm": 0.0,
+      "n_holes": 1
+    },
+    {
+      "case_id": 171,
+      "field_errors": {
+        "u_x": 0.16729046485941365,
+        "u_y": 0.0705167187541013,
+        "von_mises": 0.1231114330173433
+      },
+      "true_peak_von_mises": 166.748291015625,
+      "pred_peak_von_mises": 184.8793040647809,
+      "peak_location_error_mm": 24.757400512695312,
+      "n_holes": 1
+    },
+    {
+      "case_id": 172,
+      "field_errors": {
+        "u_x": 0.3754175527497319,
+        "u_y": 0.03489041659055233,
+        "von_mises": 0.1081328950335538
+      },
+      "true_peak_von_mises": 261.7631072998047,
+      "pred_peak_von_mises": 278.8138464220371,
+      "peak_location_error_mm": 0.0,
+      "n_holes": 1
+    },
+    {
+      "case_id": 177,
+      "field_errors": {
+        "u_x": 0.4133040985488297,
+        "u_y": 0.06821855410561975,
+        "von_mises": 0.17011984599627983
+      },
+      "true_peak_von_mises": 261.2458801269531,
+      "pred_peak_von_mises": 269.2802584518351,
+      "peak_location_error_mm": 3.1462130152529957,
+      "n_holes": 1
+    },
+    {
+      "case_id": 191,
+      "field_errors": {
+        "u_x": 0.6193277271408536,
+        "u_y": 0.06415203441826359,
+        "von_mises": 0.12166109153982647
+      },
+      "true_peak_von_mises": 255.619384765625,
+      "pred_peak_von_mises": 257.48478152092525,
+      "peak_location_error_mm": 0.0,
+      "n_holes": 1
+    },
+    {
+      "case_id": 194,
+      "field_errors": {
+        "u_x": 1.4545793343615934,
+        "u_y": 0.07309251029346726,
+        "von_mises": 0.13191990047252822
+      },
+      "true_peak_von_mises": 253.6152572631836,
+      "pred_peak_von_mises": 243.89877975578335,
+      "peak_location_error_mm": 0.0,
+      "n_holes": 1
+    },
+    {
+      "case_id": 213,
+      "field_errors": {
+        "u_x": 0.0426331483973506,
+        "u_y": 0.015304459534244691,
+        "von_mises": 0.0158746217568741
+      },
+      "true_peak_von_mises": 87.22843170166016,
+      "pred_peak_von_mises": 90.45409164842889,
+      "peak_location_error_mm": 98.08159868191383,
+      "n_holes": 0
+    },
+    {
+      "case_id": 214,
+      "field_errors": {
+        "u_x": 0.34884760856567915,
+        "u_y": 0.04179779350446682,
+        "von_mises": 0.10282124816618544
+      },
+      "true_peak_von_mises": 209.66402435302734,
+      "pred_peak_von_mises": 216.68918152659415,
+      "peak_location_error_mm": 79.51667332551288,
+      "n_holes": 2
+    },
+    {
+      "case_id": 262,
+      "field_errors": {
+        "u_x": 0.22759853932971605,
+        "u_y": 0.036763526527184336,
+        "von_mises": 0.10625504070526176
+      },
+      "true_peak_von_mises": 250.87958526611328,
+      "pred_peak_von_mises": 243.32428883341703,
+      "peak_location_error_mm": 1.4067198130195724,
+      "n_holes": 1
+    },
+    {
+      "case_id": 273,
+      "field_errors": {
+        "u_x": 0.03895636488103245,
+        "u_y": 0.014307868003347712,
+        "von_mises": 0.01206457446067208
+      },
+      "true_peak_von_mises": 152.2447509765625,
+      "pred_peak_von_mises": 160.29070652664316,
+      "peak_location_error_mm": 221.81974664127628,
+      "n_holes": 0
+    },
+    {
+      "case_id": 285,
+      "field_errors": {
+        "u_x": 0.3376118554093103,
+        "u_y": 0.04252688338203827,
+        "von_mises": 0.1255463758797112
+      },
+      "true_peak_von_mises": 258.8528594970703,
+      "pred_peak_von_mises": 281.03759164519295,
+      "peak_location_error_mm": 17.420076540905242,
+      "n_holes": 2
+    },
+    {
+      "case_id": 328,
+      "field_errors": {
+        "u_x": 0.5252423276831557,
+        "u_y": 0.07047972745774829,
+        "von_mises": 0.18907807832621415
+      },
+      "true_peak_von_mises": 273.77197265625,
+      "pred_peak_von_mises": 276.58114319991074,
+      "peak_location_error_mm": 3.5895949102350513,
+      "n_holes": 2
+    },
+    {
+      "case_id": 332,
+      "field_errors": {
+        "u_x": 0.031786217833759255,
+        "u_y": 0.014597316088157137,
+        "von_mises": 0.012821564749247229
+      },
+      "true_peak_von_mises": 135.75450134277344,
+      "pred_peak_von_mises": 141.41925852922984,
+      "peak_location_error_mm": 221.81974664127628,
+      "n_holes": 0
+    },
+    {
+      "case_id": 357,
+      "field_errors": {
+        "u_x": 0.04266822536089805,
+        "u_y": 0.014301748311110125,
+        "von_mises": 0.012854656184262144
+      },
+      "true_peak_von_mises": 199.908447265625,
+      "pred_peak_von_mises": 205.5836034415621,
+      "peak_location_error_mm": 170.42300314218147,
+      "n_holes": 0
+    },
+    {
+      "case_id": 371,
+      "field_errors": {
+        "u_x": 0.3785096603146211,
+        "u_y": 0.05490711777007603,
+        "von_mises": 0.11315449061255665
+      },
+      "true_peak_von_mises": 268.2021484375,
+      "pred_peak_von_mises": 267.00463774560853,
+      "peak_location_error_mm": 16.833927148677954,
+      "n_holes": 1
+    }
+  ],
+  "val_summary": {
+    "u_x_rel_l2_mean": 0.37443882921191685,
+    "u_y_rel_l2_mean": 0.0458752299163739,
+    "von_mises_rel_l2_mean": 0.10317291701579942,
+    "peak_von_mises_rel_l2": 0.042482067557581535,
+    "mean_peak_location_error_mm": 13.109087711403951,
+    "n_cases_with_holes": 16,
+    "n_cases_excluded_zero_holes": 4
+  },
+  "test_ood": [
+    {
+      "case_id": 202,
+      "field_errors": {
+        "u_x": 0.26516907693855024,
+        "u_y": 0.08239301542209966,
+        "von_mises": 0.20848006056949922
+      },
+      "true_peak_von_mises": 236.1793670654297,
+      "pred_peak_von_mises": 223.8186853059779,
+      "peak_location_error_mm": 22.240806579589844,
+      "n_holes": 3
+    },
+    {
+      "case_id": 216,
+      "field_errors": {
+        "u_x": 0.27979339118944446,
+        "u_y": 0.05826278931422759,
+        "von_mises": 0.17790095180452983
+      },
+      "true_peak_von_mises": 252.22894287109375,
+      "pred_peak_von_mises": 266.62654083680155,
+      "peak_location_error_mm": 63.27497557012805,
+      "n_holes": 3
+    },
+    {
+      "case_id": 217,
+      "field_errors": {
+        "u_x": 0.8889608714597895,
+        "u_y": 0.056219981643627355,
+        "von_mises": 0.21577405250172904
+      },
+      "true_peak_von_mises": 260.5108642578125,
+      "pred_peak_von_mises": 275.86948508556577,
+      "peak_location_error_mm": 26.214775284655904,
+      "n_holes": 3
+    },
+    {
+      "case_id": 222,
+      "field_errors": {
+        "u_x": 0.14791868381552614,
+        "u_y": 0.04720607033387671,
+        "von_mises": 0.12784313312279824
+      },
+      "true_peak_von_mises": 156.91771697998047,
+      "pred_peak_von_mises": 168.93830794317932,
+      "peak_location_error_mm": 100.86445083203445,
+      "n_holes": 3
+    },
+    {
+      "case_id": 228,
+      "field_errors": {
+        "u_x": 0.31708765774501785,
+        "u_y": 0.07772496886577963,
+        "von_mises": 0.21162086626762333
+      },
+      "true_peak_von_mises": 270.4154968261719,
+      "pred_peak_von_mises": 279.53122609701484,
+      "peak_location_error_mm": 88.97831787166572,
+      "n_holes": 3
+    },
+    {
+      "case_id": 231,
+      "field_errors": {
+        "u_x": 1.5687377051471632,
+        "u_y": 0.13716785825436947,
+        "von_mises": 0.2834411232840734
+      },
+      "true_peak_von_mises": 274.0664774576823,
+      "pred_peak_von_mises": 281.1232301153513,
+      "peak_location_error_mm": 44.4597939208751,
+      "n_holes": 3
+    },
+    {
+      "case_id": 238,
+      "field_errors": {
+        "u_x": 0.16941188957642486,
+        "u_y": 0.04714126380178412,
+        "von_mises": 0.12258701849229098
+      },
+      "true_peak_von_mises": 253.1672592163086,
+      "pred_peak_von_mises": 252.2857900925893,
+      "peak_location_error_mm": 9.497520446777344,
+      "n_holes": 3
+    },
+    {
+      "case_id": 240,
+      "field_errors": {
+        "u_x": 0.27155002244935134,
+        "u_y": 0.051685322095533594,
+        "von_mises": 0.1515513016550026
+      },
+      "true_peak_von_mises": 262.48936462402344,
+      "pred_peak_von_mises": 281.3831970248306,
+      "peak_location_error_mm": 7.387133808198267,
+      "n_holes": 3
+    },
+    {
+      "case_id": 243,
+      "field_errors": {
+        "u_x": 0.1941348603020983,
+        "u_y": 0.03697245039281819,
+        "von_mises": 0.13694556867841948
+      },
+      "true_peak_von_mises": 198.0797119140625,
+      "pred_peak_von_mises": 218.47590932513353,
+      "peak_location_error_mm": 44.32717628224881,
+      "n_holes": 3
+    },
+    {
+      "case_id": 244,
+      "field_errors": {
+        "u_x": 1.218220379940181,
+        "u_y": 0.09916561167776372,
+        "von_mises": 0.21243992591967795
+      },
+      "true_peak_von_mises": 251.1971664428711,
+      "pred_peak_von_mises": 222.7548738037155,
+      "peak_location_error_mm": 19.891647338867188,
+      "n_holes": 3
+    },
+    {
+      "case_id": 246,
+      "field_errors": {
+        "u_x": 0.22044634584834558,
+        "u_y": 0.049534546665938206,
+        "von_mises": 0.15539337795633337
+      },
+      "true_peak_von_mises": 161.15082550048828,
+      "pred_peak_von_mises": 180.333795771669,
+      "peak_location_error_mm": 19.42437744140625,
+      "n_holes": 3
+    },
+    {
+      "case_id": 248,
+      "field_errors": {
+        "u_x": 0.3163924549168918,
+        "u_y": 0.056883063389295996,
+        "von_mises": 0.2095294563919126
+      },
+      "true_peak_von_mises": 257.0853576660156,
+      "pred_peak_von_mises": 270.09623390903056,
+      "peak_location_error_mm": 60.35869586130805,
+      "n_holes": 3
+    },
+    {
+      "case_id": 252,
+      "field_errors": {
+        "u_x": 0.4023808313638645,
+        "u_y": 0.09405466387074947,
+        "von_mises": 0.19147462877063298
+      },
+      "true_peak_von_mises": 297.59674072265625,
+      "pred_peak_von_mises": 273.0568699068574,
+      "peak_location_error_mm": 33.311730544663334,
+      "n_holes": 3
+    },
+    {
+      "case_id": 265,
+      "field_errors": {
+        "u_x": 0.24699669257390663,
+        "u_y": 0.05041348387463871,
+        "von_mises": 0.14550115204931835
+      },
+      "true_peak_von_mises": 151.07469177246094,
+      "pred_peak_von_mises": 149.4292844829074,
+      "peak_location_error_mm": 46.895197915446005,
+      "n_holes": 3
+    },
+    {
+      "case_id": 266,
+      "field_errors": {
+        "u_x": 0.26862495127319974,
+        "u_y": 0.057400737571127215,
+        "von_mises": 0.20307720091459297
+      },
+      "true_peak_von_mises": 266.7001647949219,
+      "pred_peak_von_mises": 288.8217459893439,
+      "peak_location_error_mm": 95.06930933768672,
+      "n_holes": 3
+    },
+    {
+      "case_id": 268,
+      "field_errors": {
+        "u_x": 0.5294621953209744,
+        "u_y": 0.05941882438017873,
+        "von_mises": 0.22806402177327634
+      },
+      "true_peak_von_mises": 266.22169494628906,
+      "pred_peak_von_mises": 321.0308496788263,
+      "peak_location_error_mm": 0.0,
+      "n_holes": 3
+    },
+    {
+      "case_id": 270,
+      "field_errors": {
+        "u_x": 0.1637297528277916,
+        "u_y": 0.0409687958708599,
+        "von_mises": 0.13800377830185948
+      },
+      "true_peak_von_mises": 250.9327621459961,
+      "pred_peak_von_mises": 246.1691296910027,
+      "peak_location_error_mm": 39.28374969383507,
+      "n_holes": 3
+    },
+    {
+      "case_id": 272,
+      "field_errors": {
+        "u_x": 1.059419273504953,
+        "u_y": 0.07040933087873122,
+        "von_mises": 0.19683715162974094
+      },
+      "true_peak_von_mises": 266.50457763671875,
+      "pred_peak_von_mises": 282.41715816278156,
+      "peak_location_error_mm": 79.66986831598246,
+      "n_holes": 3
+    },
+    {
+      "case_id": 275,
+      "field_errors": {
+        "u_x": 0.5833359579988517,
+        "u_y": 0.08647673533127484,
+        "von_mises": 0.21086661321753014
+      },
+      "true_peak_von_mises": 272.8175811767578,
+      "pred_peak_von_mises": 261.0715180738971,
+      "peak_location_error_mm": 61.83781180295134,
+      "n_holes": 3
+    },
+    {
+      "case_id": 277,
+      "field_errors": {
+        "u_x": 1.4689624412473186,
+        "u_y": 0.06638972096435108,
+        "von_mises": 0.22181425760351883
+      },
+      "true_peak_von_mises": 267.0374755859375,
+      "pred_peak_von_mises": 277.0767228203778,
+      "peak_location_error_mm": 10.942431194278464,
+      "n_holes": 3
+    },
+    {
+      "case_id": 278,
+      "field_errors": {
+        "u_x": 0.21764783332183846,
+        "u_y": 0.06449200768219586,
+        "von_mises": 0.1812978560145033
+      },
+      "true_peak_von_mises": 253.56211853027344,
+      "pred_peak_von_mises": 263.0586796545638,
+      "peak_location_error_mm": 17.894304833371514,
+      "n_holes": 3
+    },
+    {
+      "case_id": 288,
+      "field_errors": {
+        "u_x": 0.12869485745891074,
+        "u_y": 0.03481776416161814,
+        "von_mises": 0.12297796630573202
+      },
+      "true_peak_von_mises": 190.36717987060547,
+      "pred_peak_von_mises": 186.10150454755086,
+      "peak_location_error_mm": 0.0,
+      "n_holes": 3
+    },
+    {
+      "case_id": 289,
+      "field_errors": {
+        "u_x": 0.2729873814863688,
+        "u_y": 0.07642529118780425,
+        "von_mises": 0.1742873524240631
+      },
+      "true_peak_von_mises": 256.5434875488281,
+      "pred_peak_von_mises": 258.1108705173619,
+      "peak_location_error_mm": 47.14793157534545,
+      "n_holes": 3
+    },
+    {
+      "case_id": 292,
+      "field_errors": {
+        "u_x": 0.24108406029963966,
+        "u_y": 0.06642773278451301,
+        "von_mises": 0.1605678741932213
+      },
+      "true_peak_von_mises": 253.75171661376953,
+      "pred_peak_von_mises": 261.6941972513707,
+      "peak_location_error_mm": 29.279146471157162,
+      "n_holes": 3
+    },
+    {
+      "case_id": 295,
+      "field_errors": {
+        "u_x": 0.4687548705739445,
+        "u_y": 0.07279549984379059,
+        "von_mises": 0.23571278809442645
+      },
+      "true_peak_von_mises": 143.75756072998047,
+      "pred_peak_von_mises": 166.09698671228594,
+      "peak_location_error_mm": 132.2204012552501,
+      "n_holes": 3
+    },
+    {
+      "case_id": 302,
+      "field_errors": {
+        "u_x": 1.296364373848781,
+        "u_y": 0.13061204818000946,
+        "von_mises": 0.24080276129210312
+      },
+      "true_peak_von_mises": 294.8951110839844,
+      "pred_peak_von_mises": 272.52785094313634,
+      "peak_location_error_mm": 22.66824090731489,
+      "n_holes": 3
+    },
+    {
+      "case_id": 311,
+      "field_errors": {
+        "u_x": 0.8708032495682028,
+        "u_y": 0.0670998441297007,
+        "von_mises": 0.17911025320801346
+      },
+      "true_peak_von_mises": 271.22279357910156,
+      "pred_peak_von_mises": 282.7073164184687,
+      "peak_location_error_mm": 12.172325134277344,
+      "n_holes": 3
+    },
+    {
+      "case_id": 322,
+      "field_errors": {
+        "u_x": 0.15890929623701097,
+        "u_y": 0.0661445573178457,
+        "von_mises": 0.16758607431623784
+      },
+      "true_peak_von_mises": 247.09066009521484,
+      "pred_peak_von_mises": 220.81932763518165,
+      "peak_location_error_mm": 111.22865145248925,
+      "n_holes": 3
+    },
+    {
+      "case_id": 327,
+      "field_errors": {
+        "u_x": 0.9151320052330073,
+        "u_y": 0.05667699449510107,
+        "von_mises": 0.1822599537744912
+      },
+      "true_peak_von_mises": 180.2281723022461,
+      "pred_peak_von_mises": 200.65236371277865,
+      "peak_location_error_mm": 85.46895503823595,
+      "n_holes": 3
+    },
+    {
+      "case_id": 329,
+      "field_errors": {
+        "u_x": 0.1875767265003334,
+        "u_y": 0.06938325007014057,
+        "von_mises": 0.16860651047458064
+      },
+      "true_peak_von_mises": 157.53146362304688,
+      "pred_peak_von_mises": 178.99423972303077,
+      "peak_location_error_mm": 33.711069151883024,
+      "n_holes": 3
+    },
+    {
+      "case_id": 330,
+      "field_errors": {
+        "u_x": 0.3715463567410729,
+        "u_y": 0.07361569298800817,
+        "von_mises": 0.1801890948573094
+      },
+      "true_peak_von_mises": 206.0899429321289,
+      "pred_peak_von_mises": 188.08933653330183,
+      "peak_location_error_mm": 25.225999339768542,
+      "n_holes": 3
+    },
+    {
+      "case_id": 331,
+      "field_errors": {
+        "u_x": 0.6040356844994569,
+        "u_y": 0.11082637270570489,
+        "von_mises": 0.24033206793854617
+      },
+      "true_peak_von_mises": 281.143310546875,
+      "pred_peak_von_mises": 278.6759857075576,
+      "peak_location_error_mm": 13.201057228363641,
+      "n_holes": 3
+    },
+    {
+      "case_id": 334,
+      "field_errors": {
+        "u_x": 0.1645681438809328,
+        "u_y": 0.03965927850946371,
+        "von_mises": 0.13680039213030992
+      },
+      "true_peak_von_mises": 253.46257781982422,
+      "pred_peak_von_mises": 262.9371745123982,
+      "peak_location_error_mm": 1.4433513220795011,
+      "n_holes": 3
+    },
+    {
+      "case_id": 345,
+      "field_errors": {
+        "u_x": 0.2765625028581225,
+        "u_y": 0.05665030323431647,
+        "von_mises": 0.16538186378234557
+      },
+      "true_peak_von_mises": 251.81070709228516,
+      "pred_peak_von_mises": 252.86171429479094,
+      "peak_location_error_mm": 0.0,
+      "n_holes": 3
+    },
+    {
+      "case_id": 348,
+      "field_errors": {
+        "u_x": 0.6773558454330341,
+        "u_y": 0.11443572303167697,
+        "von_mises": 0.2620076216860427
+      },
+      "true_peak_von_mises": 257.4127655029297,
+      "pred_peak_von_mises": 259.87398965409824,
+      "peak_location_error_mm": 161.909638873792,
+      "n_holes": 3
+    },
+    {
+      "case_id": 350,
+      "field_errors": {
+        "u_x": 1.35461976116923,
+        "u_y": 0.10213447905298922,
+        "von_mises": 0.3061804467626188
+      },
+      "true_peak_von_mises": 282.5444793701172,
+      "pred_peak_von_mises": 283.47029519788356,
+      "peak_location_error_mm": 34.89780354962958,
+      "n_holes": 3
+    },
+    {
+      "case_id": 351,
+      "field_errors": {
+        "u_x": 0.5537692650936082,
+        "u_y": 0.05649909585892904,
+        "von_mises": 0.18038418655854568
+      },
+      "true_peak_von_mises": 161.34166717529297,
+      "pred_peak_von_mises": 181.29697715904427,
+      "peak_location_error_mm": 67.61735443392094,
+      "n_holes": 3
+    },
+    {
+      "case_id": 352,
+      "field_errors": {
+        "u_x": 0.21363749868560125,
+        "u_y": 0.03896339042806731,
+        "von_mises": 0.12590243145106922
+      },
+      "true_peak_von_mises": 166.86698150634766,
+      "pred_peak_von_mises": 165.80139008432056,
+      "peak_location_error_mm": 64.92135740025164,
+      "n_holes": 3
+    },
+    {
+      "case_id": 358,
+      "field_errors": {
+        "u_x": 0.7373139109017851,
+        "u_y": 0.06992050606946883,
+        "von_mises": 0.20175419196947408
+      },
+      "true_peak_von_mises": 265.1068420410156,
+      "pred_peak_von_mises": 286.3630700189929,
+      "peak_location_error_mm": 34.3503812903403,
+      "n_holes": 3
+    },
+    {
+      "case_id": 360,
+      "field_errors": {
+        "u_x": 0.38794441599858515,
+        "u_y": 0.03605183806537887,
+        "von_mises": 0.13033592071328465
+      },
+      "true_peak_von_mises": 255.32113647460938,
+      "pred_peak_von_mises": 259.90411164805596,
+      "peak_location_error_mm": 143.32410389943655,
+      "n_holes": 3
+    },
+    {
+      "case_id": 361,
+      "field_errors": {
+        "u_x": 0.9792636299578198,
+        "u_y": 0.08430031846962342,
+        "von_mises": 0.22193027276478006
+      },
+      "true_peak_von_mises": 261.7537841796875,
+      "pred_peak_von_mises": 268.9443161523772,
+      "peak_location_error_mm": 0.0,
+      "n_holes": 3
+    },
+    {
+      "case_id": 362,
+      "field_errors": {
+        "u_x": 0.351272034359734,
+        "u_y": 0.03830152075052401,
+        "von_mises": 0.15525479102464063
+      },
+      "true_peak_von_mises": 239.9265365600586,
+      "pred_peak_von_mises": 245.272254834072,
+      "peak_location_error_mm": 18.589515686035156,
+      "n_holes": 3
+    },
+    {
+      "case_id": 363,
+      "field_errors": {
+        "u_x": 0.19416757873021734,
+        "u_y": 0.06203287618552845,
+        "von_mises": 0.1844592437103363
+      },
+      "true_peak_von_mises": 256.27831268310547,
+      "pred_peak_von_mises": 253.82734034898203,
+      "peak_location_error_mm": 71.40589393244369,
+      "n_holes": 3
+    },
+    {
+      "case_id": 364,
+      "field_errors": {
+        "u_x": 0.2834492385879061,
+        "u_y": 0.06222652508637526,
+        "von_mises": 0.2111311967557485
+      },
+      "true_peak_von_mises": 261.18017578125,
+      "pred_peak_von_mises": 279.60546768074107,
+      "peak_location_error_mm": 37.53109469698818,
+      "n_holes": 3
+    },
+    {
+      "case_id": 368,
+      "field_errors": {
+        "u_x": 0.406052550532879,
+        "u_y": 0.05410925024683331,
+        "von_mises": 0.13447618071696232
+      },
+      "true_peak_von_mises": 252.89984130859375,
+      "pred_peak_von_mises": 256.33371910868976,
+      "peak_location_error_mm": 111.35874950815209,
+      "n_holes": 3
+    },
+    {
+      "case_id": 369,
+      "field_errors": {
+        "u_x": 1.1629326124794477,
+        "u_y": 0.11017865003728171,
+        "von_mises": 0.2607849706795583
+      },
+      "true_peak_von_mises": 267.6115264892578,
+      "pred_peak_von_mises": 277.81745108622073,
+      "peak_location_error_mm": 47.16939418432932,
+      "n_holes": 3
+    },
+    {
+      "case_id": 380,
+      "field_errors": {
+        "u_x": 0.36801273603511764,
+        "u_y": 0.049499620212399044,
+        "von_mises": 0.21562477718844567
+      },
+      "true_peak_von_mises": 251.76380920410156,
+      "pred_peak_von_mises": 264.6161924871866,
+      "peak_location_error_mm": 80.37989290921944,
+      "n_holes": 3
+    },
+    {
+      "case_id": 385,
+      "field_errors": {
+        "u_x": 0.41730722097059875,
+        "u_y": 0.07099771381522064,
+        "von_mises": 0.19177510105168277
+      },
+      "true_peak_von_mises": 260.13059997558594,
+      "pred_peak_von_mises": 259.53101965996416,
+      "peak_location_error_mm": 11.779289245605469,
+      "n_holes": 3
+    },
+    {
+      "case_id": 388,
+      "field_errors": {
+        "u_x": 0.2712972571452683,
+        "u_y": 0.03689728868938704,
+        "von_mises": 0.12852353965373328
+      },
+      "true_peak_von_mises": 251.94259643554688,
+      "pred_peak_von_mises": 254.00621136068418,
+      "peak_location_error_mm": 14.851665496826172,
+      "n_holes": 3
+    },
+    {
+      "case_id": 394,
+      "field_errors": {
+        "u_x": 0.2119992342875224,
+        "u_y": 0.039945079480299996,
+        "von_mises": 0.13999575810961443
+      },
+      "true_peak_von_mises": 252.86231231689453,
+      "pred_peak_von_mises": 259.4405034148824,
+      "peak_location_error_mm": 50.68218614527408,
+      "n_holes": 3
+    },
+    {
+      "case_id": 398,
+      "field_errors": {
+        "u_x": 0.1906212467537341,
+        "u_y": 0.04538045003547884,
+        "von_mises": 0.17994590011894324
+      },
+      "true_peak_von_mises": 249.93185424804688,
+      "pred_peak_von_mises": 253.03106093081342,
+      "peak_location_error_mm": 82.2275520515903,
+      "n_holes": 3
+    }
+  ],
+  "test_ood_summary": {
+    "u_x_rel_l2_mean": 0.5003219375503796,
+    "u_y_rel_l2_mean": 0.06634098426283726,
+    "von_mises_rel_l2_mean": 0.18657892118873967,
+    "peak_von_mises_rel_l2": 0.06410980454075405,
+    "mean_peak_location_error_mm": 47.81543288345039,
+    "n_cases_with_holes": 51,
+    "n_cases_excluded_zero_holes": 0
+  }
+}
