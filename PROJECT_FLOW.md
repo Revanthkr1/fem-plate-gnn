@@ -434,22 +434,68 @@ information about it.
 
 Architecture carried over unchanged from phase 10b (`node_in_dim=3`,
 `n_message_passing=8` -- no hand-fed hole geometry, the validated
-non-parametric setup). Training queued next; own checkpoint subdirectory
-(`.../phase11/`), same collision-avoidance discipline as every run since
-phase 9.
+non-parametric setup). Own checkpoint subdirectory (`.../phase11/`), same
+collision-avoidance discipline as every run since phase 9.
+
+## Phase 11b — Training + generalization evaluation (done, honest mixed result)
+
+Checkpoint verified clean: `node_encoder` input dim 3, 8 message-passing
+blocks, `epoch=249`, `T_max=250` (fresh run), `global_step=20750` = 329
+train cases / 4 accum steps * 250 epochs exactly.
+
+Evaluated on both splits with `src/evaluate.py`. Along the way, found and
+fixed a real bug in the evaluation code itself: 0-hole cases have no actual
+stress concentration (the field is smooth/near-uniform under uniaxial
+tension), so their "true peak location" is essentially arbitrary mesh noise
+-- including them in the peak-location-error average was comparing noise
+against noise and inflating the number in a way that looked like model
+failure but wasn't. `summarize()` now excludes 0-hole cases from that metric
+specifically (peak magnitude and bulk field errors are still meaningful for
+them, so those stay computed over the full set) -- see `src/evaluate.py`.
+
+Corrected numbers (cases with >=1 hole only, for the location metric):
+
+| Split | Peak magnitude error | Peak location error (mean / median) |
+|---|---|---|
+| Phase 10b (single-hole only, for reference) | 3.9% | 4.9mm / -- |
+| **In-distribution held-out** (0/1/2 holes, 16 with-hole cases) | 31.6% | 43.9mm / 32.1mm |
+| **OOD held-out** (count=3, never seen, 51 cases) | 33.2% | 49.0mm / 44.9mm |
+
+**Honest read, two separate findings:**
+
+1. **The actual point of phase 11 -- the generalization gap -- is small.**
+   In-distribution (31.6%/43.9mm) vs. genuinely-unseen count=3 (33.2%/49.0mm)
+   are close. The model generalizes to a hole count it never trained on
+   almost as well as it performs on counts it did train on. That's the real
+   demonstration this phase was built to produce, and it holds up.
+
+2. **But both numbers are much worse than phase 10b's single-hole-only
+   result.** Training on a more geometrically diverse dataset (variable hole
+   count, not just one template) is a harder learning problem -- the model
+   now has to handle a variable number of candidate stress concentrations
+   and correctly judge which one (if any) dominates, not just regress a
+   single hole's effect. The same 250-epoch budget and architecture that
+   fully solved the easier single-hole problem hasn't yet reached the same
+   quality on this harder one.
+
+Not yet decided: whether to push training further (more epochs, given
+undertraining was exactly the phase-10b lesson for a harder localization
+problem), add capacity, or treat "small generalization gap, weaker absolute
+accuracy" as the honest, sufficient conclusion for this phase and move on.
 
 ## Remaining phases
 
-12. Train phase 11 on Colab/Kaggle; evaluate on *both* splits -- the normal
-    in-distribution holdout (expect similar to phase 10b's ~4-5%/~5-8mm) and,
-    the actual point of this phase, the held-out count=3 cases. Report both,
-    honestly, even if count=3 is meaningfully worse.
-13. Decide whether to also do a genuinely clean rerun of the phase-9
+13. Decide on phase 11's next step: push training further on the harder
+    multi-count task (more epochs, given phase 10b's own lesson that
+    undertraining specifically hurts peak-stress localization), add model
+    capacity, or accept the current result (small generalization gap,
+    weaker absolute accuracy than the single-hole specialist) as sufficient.
+14. Decide whether to also do a genuinely clean rerun of the phase-9
     comparison (fresh weights, isolated checkpoint directory) to confirm the
     undertraining hypothesis in isolation -- open since phase 9, low
     priority now that phase 10b's result stands on its own regardless.
-14. "Copilot" demo (geometry/parameters in, instant prediction out via the
+15. "Copilot" demo (geometry/parameters in, instant prediction out via the
     trained GNN — mirroring how Neural Concept's actual product works, not a
     natural-language agent).
-15. README narrative, and — if desired — a PhysicsNeMo v2 port, mirroring
+16. README narrative, and — if desired — a PhysicsNeMo v2 port, mirroring
     the AirfRANS project's stated ambition.

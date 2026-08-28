@@ -67,6 +67,14 @@ def evaluate_case(model, raw_dir, case_id, stats):
         "true_peak_von_mises": float(targets[true_peak_idx, 2]),
         "pred_peak_von_mises": float(pred[pred_peak_idx, 2]),
         "peak_location_error_mm": peak_location_error,
+        # With 0 holes there's no real stress concentration -- the field is
+        # smooth/near-uniform, so "true peak location" is essentially
+        # arbitrary mesh noise, not a physically meaningful target. Peak-
+        # location error is only meaningful when there's an actual hole to
+        # localize (see PROJECT_FLOW.md phase 11 -- this was found by 0-hole
+        # cases showing huge "errors" that were noise-vs-noise, not real
+        # model failure).
+        "n_holes": len(case["params"]["holes"]) if "holes" in case["params"] else 1,
     }
 
 
@@ -85,7 +93,17 @@ def evaluate_split(checkpoint_path, raw_dir, stats_path, case_ids, log_every=20,
 def summarize(results):
     """Aggregate a list of evaluate_case() results into headline numbers --
     mean relative L2 per field (never blended), plus peak-von-Mises magnitude
-    relative error and mean peak-location error across the whole set."""
+    relative error and mean peak-location error.
+
+    Peak-location error is computed only over cases with >=1 hole -- a
+    0-hole case has no real stress concentration (the field is smooth/near-
+    uniform), so its "true peak" location is essentially arbitrary mesh
+    noise, and including it just adds noise-vs-noise error that looks like
+    model failure but isn't (see PROJECT_FLOW.md phase 11). Peak magnitude
+    and the per-field relative L2 are still meaningful for 0-hole cases
+    (there IS a real, if unremarkable, max value and field to compare), so
+    those stay computed over the full set.
+    """
     summary = {}
     for field in FIELD_NAMES:
         errors = [r["field_errors"][field] for r in results]
@@ -96,7 +114,11 @@ def summarize(results):
     summary["peak_von_mises_rel_l2"] = float(
         np.linalg.norm(pred_peaks - true_peaks) / np.linalg.norm(true_peaks)
     )
+
+    with_holes = [r for r in results if r.get("n_holes", 1) > 0]
     summary["mean_peak_location_error_mm"] = float(
-        np.mean([r["peak_location_error_mm"] for r in results])
+        np.mean([r["peak_location_error_mm"] for r in with_holes])
     )
+    summary["n_cases_with_holes"] = len(with_holes)
+    summary["n_cases_excluded_zero_holes"] = len(results) - len(with_holes)
     return summary
