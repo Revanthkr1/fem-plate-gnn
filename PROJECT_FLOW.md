@@ -482,14 +482,37 @@ Not yet decided: whether to push training further (more epochs, given
 undertraining was exactly the phase-10b lesson for a harder localization
 problem), add capacity, or treat "small generalization gap, weaker absolute
 accuracy" as the honest, sufficient conclusion for this phase and move on.
+User picked more epochs.
+
+## Phase 11c — More epochs: muddied by the phase-9 bug recurring, fixed properly this time
+
+Bumped `max_epochs` 250 -> 500 (`configs/base.yaml`), new checkpoint
+subdirectory (`.../phase11c/`). The resulting checkpoint (`epoch=499`,
+`global_step=41500` -- consistent with either a clean 500-epoch run OR a
+resumed 250-then-continued-250-more run, since both land on the same total)
+had **`lr_schedulers[0].T_max == 250`, not 500** -- the exact phase-9 bug
+recurring, despite the new subdirectory. `global_step` alone could not have
+caught this; only inspecting the checkpoint's own saved scheduler state did.
+
+**Root-caused and fixed properly this time**, not just via directory
+hygiene (which had now failed twice): added
+`src/train.py::_check_resume_schedule_compatibility()`, called right before
+`trainer.fit()` whenever resuming -- compares the checkpoint's saved
+scheduler `T_max` against the requested `max_epochs` and raises immediately
+if they don't match, instead of silently corrupting the schedule via
+`load_state_dict`. Verified against the actual mismatched checkpoint
+(correctly raises) and a matching case (correctly stays silent). This is a
+permanent guard against the whole bug class, not a one-off patch -- any
+future mismatched resume now fails loudly at start, not silently months
+later when someone happens to inspect a checkpoint's internals.
+
+Phase 11c needs re-running clean before its result can be trusted.
 
 ## Remaining phases
 
-13. Decide on phase 11's next step: push training further on the harder
-    multi-count task (more epochs, given phase 10b's own lesson that
-    undertraining specifically hurts peak-stress localization), add model
-    capacity, or accept the current result (small generalization gap,
-    weaker absolute accuracy than the single-hole specialist) as sufficient.
+13. Re-run phase 11c cleanly (fresh checkpoint directory, now protected by
+    the new resume-schedule guard) and evaluate on both splits, same as
+    phase 11b.
 14. Decide whether to also do a genuinely clean rerun of the phase-9
     comparison (fresh weights, isolated checkpoint directory) to confirm the
     undertraining hypothesis in isolation -- open since phase 9, low
