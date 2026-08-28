@@ -49,10 +49,17 @@ model:
                         # the largest holes / most distant nodes.
 
 training:
-  max_epochs: 250  # bumped from 100 -- first full run's peak-stress accuracy was
-                   # weak (37% relative error, 18mm location miss on the 20-case
-                   # holdout, see PROJECT_FLOW.md phase 8); cheapest thing to try
-                   # first before touching model capacity or the loss function
+  max_epochs: 500  # bumped from 250 -- phase 11's variable-hole-count training
+                   # regressed badly vs. phase 10b's single-hole specialist
+                   # (peak-stress error ~32-33%, location error ~44-49mm,
+                   # vs. 3.9%/4.9mm) even though the generalization GAP itself
+                   # was small (in-distribution vs held-out count=3 were
+                   # close). Same "cheapest thing to try first" logic that
+                   # fixed phase 10b's localization regression: this is a
+                   # harder task (variable number of candidate stress
+                   # concentrations, not just one), so it plausibly just
+                   # needs more optimization steps than the easier single-hole
+                   # problem did -- see PROJECT_FLOW.md phase 11b/11c
   batch_size: 1
   accumulate_grad_batches: 4
   n_val: 20  # 10% holdout -- was 2 for the 3-case overfit test, too thin now that
