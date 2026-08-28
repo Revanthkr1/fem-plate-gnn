@@ -78,6 +78,35 @@ class TrainModule(L.LightningModule):
         return {"optimizer": optimizer, "lr_scheduler": scheduler}
 
 
+def _check_resume_schedule_compatibility(resume_from_checkpoint, max_epochs):
+    """Refuse to resume into a checkpoint whose Cosine-annealing schedule was
+    built for a different max_epochs -- Lightning's ckpt_path= resume
+    restores the OLD scheduler state via load_state_dict, which silently
+    overwrites a freshly-constructed T_max back to the checkpoint's saved
+    value instead of raising. That exact bug muddied phase 9 (100-epoch
+    checkpoint's T_max=100 silently surviving into a claimed "250-epoch"
+    run) and phase 11c (same thing, T_max=250 surviving into a claimed
+    "500-epoch" run) -- both looked like clean runs (global_step matched the
+    intended epoch count either way) until the checkpoint's own scheduler
+    state was inspected directly. See PROJECT_FLOW.md phases 9 and 11c.
+    """
+    ckpt = torch.load(resume_from_checkpoint, map_location="cpu", weights_only=False)
+    lr_schedulers = ckpt.get("lr_schedulers")
+    if not lr_schedulers:
+        return
+    saved_t_max = lr_schedulers[0].get("T_max")
+    if saved_t_max is not None and saved_t_max != max_epochs:
+        raise ValueError(
+            f"Refusing to resume from {resume_from_checkpoint}: its LR "
+            f"scheduler was built with T_max={saved_t_max}, but this run "
+            f"requests max_epochs={max_epochs}. Resuming would silently "
+            f"corrupt the Cosine annealing schedule rather than raise -- use "
+            f"a fresh checkpoint directory for a run with a different "
+            f"max_epochs instead of pointing checkpoint_path at one that "
+            f"already has periodic checkpoints from a different max_epochs."
+        )
+
+
 def main(
     cache_dir,
     stats_path,
@@ -142,6 +171,7 @@ def main(
         resume_from_checkpoint = local_resume_path
 
     if resume_from_checkpoint:
+        _check_resume_schedule_compatibility(resume_from_checkpoint, max_epochs)
         print(f"Resuming from {resume_from_checkpoint}")
 
     trainer = L.Trainer(
