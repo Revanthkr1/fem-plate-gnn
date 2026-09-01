@@ -5,6 +5,11 @@
 data/cache/
 data/runs/
 data/*.ckpt
+# Deliberate, narrow exception: the one demo/release checkpoint (see
+# src/app.py, CLAUDE.md) -- small (~2.5MB), needed for the demo to work on
+# a machine that hasn't trained anything. Not a general "commit checkpoints"
+# policy change -- every other .ckpt stays gitignored.
+!data/model_release.ckpt
 
 __pycache__/
 *.pyc

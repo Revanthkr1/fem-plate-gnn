@@ -40,7 +40,27 @@ and the plan this was built from.
   committing it is what makes `git clone` alone enough to reproduce training
   elsewhere (e.g. Colab). `runs/` (transient Abaqus job working directories)
   and `cache/` (preprocessed tensors, regeneratable via
-  `src/recompute_stats.py`) are gitignored, along with checkpoints.
+  `src/recompute_stats.py`) are gitignored, along with checkpoints -- with
+  one deliberate, narrow exception: `data/model_release.ckpt` (the phase
+  11c2 checkpoint) is committed, since the demo (`src/app.py`) needs a
+  working checkpoint on a machine that hasn't trained anything, and at
+  ~2.5MB it's not the burden that motivated gitignoring checkpoints
+  generally. This isn't a policy change -- every other `.ckpt` stays
+  gitignored.
+
+## Demo
+
+`src/app.py` -- a Gradio app, geometry in (0-3 holes, load), predicted
+stress/displacement field out. Meshed live with `gmsh` at demo-time
+(`src/mesh_gen.py`), not Abaqus -- a shareable demo can't depend on a
+licensed Abaqus install plus the IIT Kanpur campus VPN. Uses the phase 11c2
+checkpoint (the variable-hole-count model) deliberately, not the more
+accurate single-hole specialist (phase 10b), because it has an actual
+generalization story to show -- including its own honestly-reported limit,
+surfaced as a visible in-app caveat when the user selects exactly 3 holes
+(the held-out generalization test case, see `PROJECT_FLOW.md` phase 11c2).
+Run with `python -m src.app` from the repo root (needs to run as a module,
+not a script, for `src`'s own imports to resolve).
 
 ## Conventions
 

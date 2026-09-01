@@ -1,0 +1,14 @@
+# Full local environment, including the demo (Colab/Kaggle notebooks install
+# their own subset directly -- torch itself comes preinstalled there, see
+# notebooks/colab_setup.ipynb and kaggle_setup.ipynb).
+numpy
+torch
+torch_geometric
+lightning
+pyvista
+pyyaml
+
+# Demo only (src/app.py, src/mesh_gen.py, src/predict.py)
+gmsh
+gradio
+matplotlib

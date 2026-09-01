@@ -545,6 +545,54 @@ report, even though less flattering -- catching that an apparently good
 result was actually an undertraining artifact is exactly the kind of
 verification this project's evaluation discipline is supposed to produce.
 
+## Phase 12 — Interactive Gradio demo (done)
+
+Priority pivoted to the demo (over pursuing the generalization gap further
+or an architectural change -- those stay open as future options, see
+remaining phases below). Uses the phase 11c2 checkpoint (`data/model_release.ckpt`,
+a small ~2.5MB deliberate exception to the "checkpoints are gitignored"
+rule -- see `CLAUDE.md`), chosen over the more accurate phase 10b
+single-hole specialist specifically because it has an actual generalization
+story to show.
+
+**The core design problem**: the model predicts on a mesh graph, not raw
+geometry parameters -- a user's "2 holes at (x,y)..." input has to become an
+actual mesh first. Abaqus can't do this at demo-time (needs a licensed
+install + the campus VPN, unusable for anyone else running the demo), so
+`src/mesh_gen.py` meshes live with `gmsh` instead -- same density
+constants as `generate_dataset.py` (global 2mm, hole-boundary refinement to
+`max(hole_r*0.15, 0.3)`), pure triangles (the model is element-type-agnostic;
+`graph.py::_mesh_edges()` is reused unchanged for edge extraction).
+
+**Verified before building anything on top of it**: regenerated two real
+held-out cases' exact geometry via gmsh and compared model predictions
+against their true Abaqus-derived ground truth. Single-hole case: 6.8% peak
+magnitude error, ~0mm location error. Two-hole case: 2.4% magnitude error,
+20.8mm location error (picked the wrong one of two holes -- consistent with
+the model's own known in-distribution variance, not a mesh artifact). Both
+within the model's established accuracy range, confirming the gmsh mesh is
+a valid substitute for Abaqus at inference time.
+
+**Hit and fixed one real bug**: `gmsh.initialize()` installs a SIGINT
+handler by default, which only works in a main thread -- Gradio runs
+callbacks in worker threads, so every prediction failed with `ValueError:
+signal only works in main thread of the main interpreter` until switched to
+`gmsh.initialize(interruptible=False)`.
+
+**Verified in an actual browser** (Playwright driving headless Chromium,
+`chromium-cli` wasn't available in this environment): 0/1/2/3-hole
+configurations all produce physically sensible stress-concentration plots;
+the hole-count slider correctly shows/hides parameter groups; the honest
+generalization-limit caveat correctly appears only when 3 holes are
+selected (both via manual input and the preloaded held-out example button);
+no console errors. Screenshots confirmed the rendered stress fields visually
+match expectations (bright concentration rings around each hole, void where
+the hole itself is).
+
+Files: `src/mesh_gen.py`, `src/predict.py`, `src/app.py`,
+`requirements.txt` (didn't exist before this phase). Run with
+`python -m src.app` from the repo root.
+
 ## Remaining phases
 
 13. Decide how to respond to the real generalization gap phase 11c2
@@ -558,8 +606,5 @@ verification this project's evaluation discipline is supposed to produce.
     comparison (fresh weights, isolated checkpoint directory) to confirm the
     undertraining hypothesis in isolation -- open since phase 9, low
     priority now that phase 10b's result stands on its own regardless.
-15. "Copilot" demo (geometry/parameters in, instant prediction out via the
-    trained GNN — mirroring how Neural Concept's actual product works, not a
-    natural-language agent).
-16. README narrative, and — if desired — a PhysicsNeMo v2 port, mirroring
+15. README narrative, and — if desired — a PhysicsNeMo v2 port, mirroring
     the AirfRANS project's stated ambition.
